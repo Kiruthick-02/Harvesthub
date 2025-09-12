@@ -11,6 +11,7 @@ const contractRoutes = require('./routes/contractRoutes');
 const marketplaceRoutes = require('./routes/marketplaceRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const weatherRoutes = require('./routes/weatherRoutes'); // Import the new route
 
 // Initialize app
 const app = express();
@@ -39,6 +40,8 @@ app.use('/api/contracts', contractRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/weather', weatherRoutes); // Register the route
+
 
 
 // --- FIX STEP 2 STARTS HERE ---

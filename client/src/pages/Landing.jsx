@@ -1,96 +1,61 @@
-import React, { useRef } from 'react';
+// CORRECTED: All imports are now grouped at the top of the file.
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-// --- FIX STARTS HERE ---
-import { ScrollTrigger } from 'gsap/ScrollTrigger'; // 1. Import the plugin
-gsap.registerPlugin(ScrollTrigger);                 // 2. Register the plugin with GSAP
-// --- FIX ENDS HERE ---
-import Button from '../components/common/Button';
-import Footer from '../components/common/Footer';
-
-// A simple SVG icon for feature cards
-const FeatureIcon = ({ path }) => (
-    <div className="bg-primary-green/20 p-3 rounded-lg mb-4 inline-block">
-        <svg className="w-8 h-8 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={path} /></svg>
-    </div>
-);
+import Navbar from '../components/navigation/Navbar'; // Assuming you have a public Navbar
+import Footer from '../components/common/Footer';   // Assuming you have a Footer
 
 const Landing = () => {
-    const container = useRef();
-
-    useGSAP(() => {
-        // Animate the hero section text and button
-        gsap.from(".hero-element", {
-            duration: 1,
-            y: 30,
-            opacity: 0,
-            stagger: 0.2,
-            ease: "power3.out"
-        });
-
-        // Animate the feature cards (This will now work correctly)
-        gsap.from(".feature-card", {
-            duration: 0.8,
-            y: 50,
-            opacity: 0,
-            stagger: 0.2,
-            ease: "power2.out",
-            scrollTrigger: {
-                trigger: ".features-section",
-                start: "top 80%", // Animate when the top of the section is 80% from the top of the viewport
-            }
-        });
-    }, { scope: container });
-
-    return (
-        <div ref={container} className="bg-dark-bg text-light-text">
-            {/* Hero Section */}
-            <section className="min-h-screen flex flex-col justify-center items-center text-center px-4">
-                <h1 className="hero-element text-5xl md:text-7xl font-bold mb-4">
-                    Welcome to <span className="text-primary-green">HarvestHub</span>
+  return (
+    <div className="bg-white">
+      <Navbar />
+      
+      {/* Hero Section */}
+      <main>
+        <div className="relative">
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100" />
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div className="relative shadow-xl sm:rounded-2xl sm:overflow-hidden">
+              <div className="absolute inset-0">
+                <img
+                  className="h-full w-full object-cover"
+                  src="https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?q=80&w=2787&auto=format&fit=crop"
+                  alt="People working on a farm"
+                />
+                <div className="absolute inset-0 bg-emerald-700 mix-blend-multiply" />
+              </div>
+              <div className="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                <h1 className="text-center text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                  <span className="block text-white">Connecting Farmers</span>
+                  <span className="block text-emerald-200">and Buyers Directly</span>
                 </h1>
-                <p className="hero-element text-lg md:text-xl text-secondary-text max-w-2xl mb-8">
-                    Connecting farmers directly to buyers. Secure contracts, fair pricing, and a transparent marketplace to help you grow.
+                <p className="mt-6 max-w-lg mx-auto text-center text-xl text-emerald-100 sm:max-w-3xl">
+                  HarvestHub empowers farmers with stable income through secure contract farming and provides buyers with reliable, high-quality produce.
                 </p>
-                <div className="hero-element">
-                    <Link to="/signup">
-                        <Button className="!w-auto px-8 py-3 text-lg">
-                            Get Started
-                        </Button>
+                <div className="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
+                  <div className="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5">
+                    <Link
+                      to="/signup"
+                      className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-emerald-700 bg-white hover:bg-emerald-50 sm:px-8"
+                    >
+                      Get started
                     </Link>
+                    <Link
+                      to="/login"
+                      className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-emerald-500 bg-opacity-80 hover:bg-opacity-100 sm:px-8"
+                    >
+                      Login
+                    </Link>
+                  </div>
                 </div>
-            </section>
-
-            {/* Features Section */}
-            <section className="features-section py-20 px-4">
-                <div className="max-w-6xl mx-auto">
-                    <h2 className="text-4xl font-bold text-center mb-12">
-                        Why Choose <span className="text-primary-green">HarvestHub</span>?
-                    </h2>
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <div className="feature-card bg-dark-card p-8 rounded-lg text-center">
-                            <FeatureIcon path="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            <h3 className="text-2xl font-bold mb-2">Secure Contracts</h3>
-                            <p className="text-secondary-text">Create, negotiate, and manage digital farming contracts with ease and confidence.</p>
-                        </div>
-                        <div className="feature-card bg-dark-card p-8 rounded-lg text-center">
-                            <FeatureIcon path="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4z" />
-                            <h3 className="text-2xl font-bold mb-2">Direct Marketplace</h3>
-                            <p className="text-secondary-text">List surplus produce or find equipment directly from other farmers, cutting out the middleman.</p>
-                        </div>
-                        <div className="feature-card bg-dark-card p-8 rounded-lg text-center">
-                           <FeatureIcon path="M13 10V3L4 14h7v7l9-11h-7z" />
-                            <h3 className="text-2xl font-bold mb-2">Real-Time Data</h3>
-                            <p className="text-secondary-text">Get instant weather updates and market insights to make informed decisions for your farm.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <Footer />
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </main>
+
+      <Footer />
+    </div>
+  );
 };
 
 export default Landing;

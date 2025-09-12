@@ -1,52 +1,60 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../features/auth/authSlice';
-
-const Icon = ({ path }) => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={path} /></svg>
-);
+import { RxDashboard } from 'react-icons/rx';
+import { FaRegHandshake, FaStore } from 'react-icons/fa';
+import { FiLogOut } from 'react-icons/fi';
+import { CgProfile } from 'react-icons/cg';
 
 const Sidebar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // We still get the user from the store
+  const { user } = useSelector((state) => state.auth);
 
-  const navLinkClasses = ({ isActive }) =>
-    `flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
-      isActive
-        ? 'bg-primary-green text-white font-bold'
-        : 'text-secondary-text hover:bg-dark-bg hover:text-light-text'
-    }`;
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
+  const linkStyles = "flex items-center px-4 py-3 text-gray-200 rounded-lg transition-colors duration-300";
+  const activeLinkStyles = "bg-emerald-700 text-white";
+  const inactiveLinkStyles = "hover:bg-emerald-800 hover:text-white";
 
   return (
-    <div className="w-64 bg-dark-card p-4 flex flex-col">
-      <div className="text-center py-4">
-        <h1 className="text-2xl font-bold text-light-text">
-          <span className="text-primary-green">Harvest</span>Hub
-        </h1>
+    <div className="hidden md:flex flex-col w-64 bg-emerald-900 text-white">
+      <div className="flex items-center justify-center h-20 border-b border-emerald-800">
+        <h1 className="text-2xl font-bold">HarvestHub</h1>
       </div>
-      <nav className="flex-1 mt-8 space-y-2">
-        {/* Updated NavLink 'to' paths */}
-        <NavLink to="/dashboard" className={navLinkClasses} end>
-          <Icon path="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          <span>Dashboard</span>
+      <nav className="flex-1 px-4 py-4 space-y-2">
+        <NavLink to="/dashboard" className={({ isActive }) => `${linkStyles} ${isActive ? activeLinkStyles : inactiveLinkStyles}`}>
+          <RxDashboard className="h-5 w-5 mr-3" />
+          Dashboard
         </NavLink>
-        <NavLink to="/dashboard/contracts" className={navLinkClasses}>
-            <Icon path="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            <span>Contracts</span>
+        <NavLink to="/contracts" className={({ isActive }) => `${linkStyles} ${isActive ? activeLinkStyles : inactiveLinkStyles}`}>
+          <FaRegHandshake className="h-5 w-5 mr-3" />
+          Contracts
         </NavLink>
-        <NavLink to="/dashboard/marketplace" className={navLinkClasses}>
-            <Icon path="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4z" />
-            <span>Marketplace</span>
+        <NavLink to="/marketplace" className={({ isActive }) => `${linkStyles} ${isActive ? activeLinkStyles : inactiveLinkStyles}`}>
+          <FaStore className="h-5 w-5 mr-3" />
+          Marketplace
         </NavLink>
-        <NavLink to="/dashboard/profile" className={navLinkClasses}>
-            <Icon path="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            <span>Profile</span>
-        </NavLink>
+        
+        
+        {/* --- THIS IS THE CRITICAL FIX --- */}
+        {/* Only render the Admin Panel link if the user exists AND their role is 'admin' */}
+        {user && user.role === 'admin' && (
+           <NavLink to="/admin" className={({ isActive }) => `${linkStyles} ${isActive ? activeLinkStyles : inactiveLinkStyles}`}>
+             <RxDashboard className="h-5 w-5 mr-3" />
+             Admin Panel
+           </NavLink>
+        )}
       </nav>
-      <div className="mt-auto">
-        <button onClick={() => dispatch(logout())} className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-secondary-text hover:bg-red-500/20 hover:text-light-text transition-colors duration-200">
-           <Icon path="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-           <span>Logout</span>
+      <div className="px-4 py-4">
+        <button onClick={handleLogout} className={`${linkStyles} w-full text-left bg-emerald-800 hover:bg-red-600`}>
+          <FiLogOut className="h-5 w-5 mr-3" />
+          Logout
         </button>
       </div>
     </div>

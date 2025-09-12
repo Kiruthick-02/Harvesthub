@@ -1,11 +1,17 @@
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+
+// --- Import Pages ---
+import Landing from './pages/Landing';
 import Login from './pages/Login';
-import Signup from './pages/Signup';
+// CORRECTED: The typo './pages. Signup' is now correctly './pages/Signup'
+import Signup from './pages/Signup'; 
 import Dashboard from './pages/Dashboard';
 import Contracts from './pages/Contracts';
 import Marketplace from './pages/Marketplace';
-import Profile from './pages/Profile';
-import Landing from './pages/Landing';
+import AdminDashboard from './features/Admin/AdminDashboard';
+
+// --- Import Layouts & Protection ---
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import ProtectedRoute from './components/ui/ProtectedRoute';
@@ -13,30 +19,38 @@ import ProtectedRoute from './components/ui/ProtectedRoute';
 function App() {
   return (
     <Routes>
-      {/* Public Route: The first page everyone sees */}
+      {/* === Public Routes === */}
       <Route path="/" element={<Landing />} />
 
-      {/* Authentication Routes: Login and Signup pages */}
+      {/* Authentication Layout Route for Login and Signup */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Route>
 
-      {/* Protected Dashboard Routes: Users must be logged in to access these */}
-      <Route 
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        {/* The 'index' route makes Dashboard the default page for the /dashboard path */}
-        <Route index element={<Dashboard />} /> 
-        <Route path="contracts" element={<Contracts />} />
-        <Route path="marketplace" element={<Marketplace />} />
-        <Route path="profile" element={<Profile />} />
+      {/* === Protected Routes for Standard Users (Farmers/Buyers) === */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/contracts" element={<Contracts />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          
+        </Route>
       </Route>
+
+      {/* === Protected Route for Admins Only === */}
+      <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+        </Route>
+      </Route>
+      
+      {/* Optional: A catch-all 404 Not Found route */}
+      <Route path="*" element={
+        <div style={{ padding: "1rem", textAlign: "center" }}>
+          <h2>404 - Page Not Found</h2>
+        </div>
+      } />
     </Routes>
   );
 }

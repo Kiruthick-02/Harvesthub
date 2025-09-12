@@ -1,66 +1,61 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import API from '../../services/api'; // Import our new, real API service
+import axios from 'axios';
 
-// Get user and token from browser's local storage if they exist
+const API_URL = '/api/auth/';
+
+// Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'));
-const token = localStorage.getItem('token');
 
 const initialState = {
   user: user ? user : null,
-  token: token ? token : null,
-  isLoading: false,
-  isSuccess: false,
   isError: false,
+  isSuccess: false,
+  isLoading: false,
   message: '',
 };
 
-// --- REAL API ASYNC THUNKS ---
-
-// Register User
-export const register = createAsyncThunk('auth/register', async (userData, thunkAPI) => {
+// Register user
+export const register = createAsyncThunk('auth/register', async (user, thunkAPI) => {
   try {
-    // Make the API call to your backend's registration endpoint
-    const response = await API.post('/auth/register', userData);
-
-    // If successful, the backend sends back the user object and token.
-    // We save them to localStorage to keep the user logged in.
-    localStorage.setItem('user', JSON.stringify(response.data));
-    localStorage.setItem('token', response.data.token);
+    const response = await axios.post(API_URL + 'register', user);
+    if (response.data) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+    }
     return response.data;
   } catch (error) {
-    // If the API call fails (e.g., email already exists), the backend
-    // sends an error message. We capture that message to show to the user.
-    const message = (error.response?.data?.message) || error.message || error.toString();
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
     return thunkAPI.rejectWithValue(message);
   }
 });
 
-// Login User
-export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) => {
+// Login user
+export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
   try {
-    const response = await API.post('/auth/login', userData);
-    localStorage.setItem('user', JSON.stringify(response.data));
-    localStorage.setItem('token', response.data.token);
+    const response = await axios.post(API_URL + 'login', user);
+    if (response.data) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+    }
     return response.data;
   } catch (error) {
-    const message = (error.response?.data?.message) || error.message || error.toString();
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
     return thunkAPI.rejectWithValue(message);
   }
 });
 
-// Logout User
 export const logout = createAsyncThunk('auth/logout', async () => {
-  // We just need to clear the data from storage.
-  localStorage.removeItem('user');
-  localStorage.removeItem('token');
+  await localStorage.removeItem('user');
 });
 
-// The slice defines how our state changes in response to the API calls
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // A standard reducer to reset the state (e.g., clear errors)
     reset: (state) => {
       state.isLoading = false;
       state.isSuccess = false;
@@ -68,27 +63,22 @@ export const authSlice = createSlice({
       state.message = '';
     },
   },
-  // extraReducers handle the states of our async thunks (pending, success, failure)
   extraReducers: (builder) => {
     builder
-      // Register cases
       .addCase(register.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.user = action.payload; // Set user from the successful API response
-        state.token = action.payload.token;
+        state.user = action.payload;
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload; // Set the error message from the API
+        state.message = action.payload;
         state.user = null;
-        state.token = null;
       })
-      // Login cases
       .addCase(login.pending, (state) => {
         state.isLoading = true;
       })
@@ -96,22 +86,67 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.user = action.payload;
-        state.token = action.payload.token;
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
         state.user = null;
-        state.token = null;
       })
-      // Logout case
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
-        state.token = null;
       });
   },
 });
 
 export const { reset } = authSlice.actions;
 export default authSlice.reducer;
+
+// Add this new asyncThunk to your authSlice.js file
+export const updateUserProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (userData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      // This API endpoint should already exist on your backend
+      const response = await axios.put('/api/users/profile', userData, config);
+
+      // IMPORTANT: Update the user in localStorage with the new data
+      const updatedUser = { ...thunkAPI.getState().auth.user, ...response.data };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Also, add the extraReducers for this new thunk
+// Find the `extraReducers` section in authSlice.js and add these cases
+/*
+  .addCase(updateUserProfile.pending, (state) => {
+    state.isLoading = true;
+  })
+  .addCase(updateUserProfile.fulfilled, (state, action) => {
+    state.isLoading = false;
+    state.isSuccess = true;
+    // Update the user state with the returned data
+    state.user.name = action.payload.name;
+    state.user.email = action.payload.email;
+  })
+  .addCase(updateUserProfile.rejected, (state, action) => {
+    state.isLoading = false;
+    state.isError = true;
+    state.message = action.payload;
+  })
+*/

@@ -34,18 +34,15 @@ const updateUserProfile = async (req, res, next) => {
       if (req.body.password) {
         user.password = req.body.password;
       }
-      if (user.role === 'farmer') {
-        user.farmDetails = req.body.farmDetails || user.farmDetails;
-      }
-
+      
       const updatedUser = await user.save();
-
+      
+      // Return only non-sensitive data
       res.json({
         _id: updatedUser._id,
         name: updatedUser.name,
         email: updatedUser.email,
         role: updatedUser.role,
-        farmDetails: updatedUser.farmDetails,
       });
     } else {
       res.status(404);
@@ -56,7 +53,24 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get all users with the role 'buyer'
+ * @route   GET /api/users/buyers
+ * @access  Private (for Farmers)
+ */
+const getBuyers = async (req, res, next) => {
+  try {
+    // Find all users where the role is 'buyer' and select only their ID and name
+    const buyers = await User.find({ role: 'buyer' }).select('_id name');
+    res.json(buyers);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Export all functions
 module.exports = {
   getUserProfile,
   updateUserProfile,
+  getBuyers,
 };
