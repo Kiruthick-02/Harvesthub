@@ -1,28 +1,45 @@
 {
   "name": "client",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@reduxjs/toolkit": "^2.9.0",
     "axios": "^1.12.0",
     "gsap": "^3.13.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.8.2",
     "redux": "^5.0.1",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.13",
-    "tailwindcss-animate": "^1.0.7"
+  "autoprefixer": "^10.4.19",
+  "postcss": "^8.4.38",
+  "react-scripts": "5.0.1",
+  "tailwindcss": "^3.4.4", 
+  "tailwindcss-animate": "^1.0.7"
+},
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions",
+      "last 2 safari versions",
+      "last 2 opera versions"
+    ]
   }
 }
