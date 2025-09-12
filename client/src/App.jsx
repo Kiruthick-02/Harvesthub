@@ -15,6 +15,8 @@ import AdminDashboard from './features/Admin/AdminDashboard';
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import ProtectedRoute from './components/ui/ProtectedRoute';
+import Weather from './pages/Weather'; // Import the new page
+
 
 function App() {
   return (
@@ -34,7 +36,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contracts" element={<Contracts />} />
           <Route path="/marketplace" element={<Marketplace />} />
-          
+          <Route path="/weather" element={<Weather />} /> {/* <-- ADD THIS LINE */}
+
         </Route>
       </Route>
 
