@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// We need a new slice action to handle profile updates.
-import { updateUserProfile, reset } from '../../features/auth/authSlice'; 
+// --- THIS IS THE CRITICAL FIX ---
+// Import the `updateUserProfile` async thunk from your auth slice.
+import { updateUserProfile } from '../../features/auth/authSlice'; 
 import { CgClose } from 'react-icons/cg';
 
-// The `onClose` prop is a function passed from the parent to close the modal.
 const ProfileModal = ({ onClose }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -14,7 +14,6 @@ const ProfileModal = ({ onClose }) => {
     email: '',
   });
 
-  // When the component loads, populate the form with the current user's data.
   useEffect(() => {
     if (user) {
       setFormData({
@@ -33,21 +32,19 @@ const ProfileModal = ({ onClose }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    // Now this dispatch call will work correctly.
     dispatch(updateUserProfile(formData));
-    // Optional: Add a success message/toast here.
     alert('Profile updated successfully!');
-    onClose(); // Close the modal after submission.
+    onClose();
   };
 
   return (
-    // Modal Overlay: covers the whole screen
     <div 
       className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center"
-      onClick={onClose} // Close modal if background is clicked
+      onClick={onClose}
     >
-      {/* Modal Content: stops the click from propagating to the overlay */}
       <div 
-        className="relative bg-gray-800 text-white w-full max-w-lg p-8 rounded-2xl shadow-lg transform transition-all"
+        className="relative bg-gray-800 text-white w-full max-w-lg p-8 rounded-2xl shadow-lg"
         onClick={(e) => e.stopPropagation()} 
       >
         <button 
@@ -56,46 +53,38 @@ const ProfileModal = ({ onClose }) => {
         >
           <CgClose size={24} />
         </button>
-
         <h2 className="text-3xl font-bold mb-6">My Profile</h2>
-        
         <form onSubmit={onSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-1">
-              Full Name
-            </label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
             <input
               type="text"
               name="name"
               id="name"
               value={formData.name}
               onChange={onChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="input-dark w-full"
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1">
-              Email Address
-            </label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
             <input
               type="email"
               name="email"
               id="email"
               value={formData.email}
               onChange={onChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="input-dark w-full"
             />
           </div>
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-400 mb-1">
-              Role
-            </label>
+            <label htmlFor="role" className="block text-sm font-medium text-gray-400 mb-1">Role</label>
             <input
               type="text"
               name="role"
               id="role"
-              value={user?.role.charAt(0).toUpperCase() + user?.role.slice(1)} // Capitalize first letter
-              disabled // Role is not editable
+              value={user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ''}
+              disabled
               className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 cursor-not-allowed"
             />
           </div>

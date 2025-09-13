@@ -1,23 +1,48 @@
+/* 
+  Injects Tailwind's base styles, component classes, and utility classes.
+  These three lines are ESSENTIAL for Tailwind CSS to work.
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* 
+  Global base styles for the entire application.
+  We set a default font and use Tailwind's `antialiased` class for smooth fonts.
+*/
 body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  @apply font-sans bg-gray-100 antialiased;
 }
 
-.input-style {
-  @apply w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white;
+/* 
+  --- CORRECTED STYLES ---
+  We now have two distinct input classes for different backgrounds.
+*/
+
+/* Use this class for forms on light backgrounds (e.g., the Weather page) */
+.input-light {
+  @apply w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors;
 }
 
-.input-style {
-  @apply w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500;
+/* Use this class for forms on dark backgrounds (e.g., modals) */
+.input-dark {
+  @apply w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors;
 }
 
-.input-style {
-  @apply w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500;
+/* 
+  A single, consistent style for all primary action buttons.
+*/
+.form-button {
+  @apply w-full flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 disabled:bg-emerald-400 disabled:cursor-not-allowed;
 }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+/* 
+  A simple fade-in animation for loading content.
+*/
+@keyframes fadeIn { 
+  from { opacity: 0; transform: translateY(10px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+.animate-fade-in { 
+  animation: fadeIn 0.5s ease-out forwards; 
+}

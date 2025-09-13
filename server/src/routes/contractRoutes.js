@@ -1,27 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const {
-  createContract,
-  getMyContracts,
-  getContractById,
-  updateContract
-} = require('../controllers/contractController');
 const { protect } = require('../middleware/auth');
-const { authorize } = require('../middleware/role');
+const { getMyContracts, getContractById, updateContractStatus } = require('../controllers/contractController');
 
-// @route   /api/contracts
+// Get all contracts for logged-in user
+router.route('/').get(protect, getMyContracts);
 
-// Get all contracts for the current user (farmer or buyer)
-router.route('/')
-  .get(protect, getMyContracts);
+// Get a single contract by ID
+router.route('/:id').get(protect, getContractById);
 
-// Create a new contract (only farmers can create)
-router.route('/')
-  .post(protect, authorize('farmer'), createContract);
-
-// Get a specific contract by its ID and update it
-router.route('/:id')
-  .get(protect, getContractById)
-  .put(protect, updateContract);
+// Update contract status
+router.route('/:id/status').put(protect, updateContractStatus);
 
 module.exports = router;

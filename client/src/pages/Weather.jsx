@@ -56,7 +56,7 @@ const Weather = () => {
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Search for a city..."
-            className="input-style flex-1"
+            className="input-light flex-1"
           />
           <button
             type="submit"
